@@ -78,15 +78,15 @@ function VideoCard({ item, onClick }: { item: typeof galleryItems[0]; onClick: (
   }, [isHovering]);
 
   const sizeClasses = {
-    small: "col-span-1 row-span-1",
-    medium: "col-span-1 md:col-span-1 row-span-1 md:row-span-2",
-    large: "col-span-1 md:col-span-2 row-span-1 md:row-span-2",
+    small: "col-span-1",
+    medium: "col-span-1 md:col-span-2",
+    large: "col-span-1 md:col-span-2",
   };
 
   const heightClasses = {
     small: "h-64",
-    medium: "h-64 md:h-full",
-    large: "h-64 md:h-full",
+    medium: "h-96",
+    large: "h-96",
   };
 
   return (
@@ -158,15 +158,15 @@ function GalleryCard({ item, onClick }: { item: typeof galleryItems[0]; onClick:
   }
 
   const sizeClasses = {
-    small: "col-span-1 row-span-1",
-    medium: "col-span-1 md:col-span-1 row-span-1 md:row-span-2",
-    large: "col-span-1 md:col-span-2 row-span-1 md:row-span-2",
+    small: "col-span-1",
+    medium: "col-span-1 md:col-span-2",
+    large: "col-span-1 md:col-span-2",
   };
 
   const heightClasses = {
     small: "h-64",
-    medium: "h-64 md:h-full",
-    large: "h-64 md:h-full",
+    medium: "h-96",
+    large: "h-96",
   };
 
   return (
@@ -581,7 +581,7 @@ export default function Gallery() {
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 auto-rows-[200px] md:auto-rows-[180px]">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 auto-rows-max">
           {galleryItems.map((item, index) => (
             <GalleryCard
               key={item.id}
