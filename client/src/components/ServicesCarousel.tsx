@@ -83,10 +83,10 @@ const services = [
 function ServiceCard({ service }: { service: typeof services[0] }) {
   return (
     <div
-      className="flex-shrink-0 w-72 bg-card border border-card-border rounded-md overflow-hidden group hover:-translate-y-1 transition-transform duration-300"
+      className="flex-shrink-0 w-72 bg-card border border-card-border rounded-md group hover:-translate-y-1.5 transition-all duration-300 hover:shadow-[0_20px_40px_rgba(225,6,0,0.3)]"
       data-testid={`card-service-${service.id}`}
     >
-      <div className="relative h-48 overflow-hidden">
+      <div className="relative h-48 overflow-hidden rounded-t-md">
         <img
           src={service.image}
           alt={service.name}
