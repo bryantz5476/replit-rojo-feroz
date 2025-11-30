@@ -1,16 +1,8 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useInView } from "framer-motion";
 import { useRef, useState, useEffect } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
-import { Star, Quote, Clock, Phone, User, ArrowRight, CheckCircle } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
-import { apiRequest } from "@/lib/queryClient";
-import { useMutation } from "@tanstack/react-query";
+import { Quote, Star, MapPin, Clock, Mail, Phone } from "lucide-react";
 
 const testimonials = [
   {
@@ -51,40 +43,6 @@ const partners = [
   { id: 5, name: "Suavecito" },
 ];
 
-const formSchema = z.object({
-  name: z.string().min(2, "El nombre debe tener al menos 2 caracteres"),
-  phone: z.string().min(9, "Introduce un teléfono válido").regex(/^[0-9+\s]+$/, "Formato de teléfono inválido"),
-});
-
-type FormData = z.infer<typeof formSchema>;
-
-function AnimatedCounter({ target, duration = 2000 }: { target: number; duration?: number }) {
-  const [count, setCount] = useState(0);
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true });
-
-  useEffect(() => {
-    if (!isInView) return;
-    
-    const startTime = Date.now();
-    const interval = setInterval(() => {
-      const elapsed = Date.now() - startTime;
-      const progress = Math.min(elapsed / duration, 1);
-      const eased = 1 - Math.pow(1 - progress, 3);
-      setCount(Math.floor(eased * target));
-      
-      if (progress >= 1) {
-        clearInterval(interval);
-        setCount(target);
-      }
-    }, 16);
-
-    return () => clearInterval(interval);
-  }, [isInView, target, duration]);
-
-  return <span ref={ref} className="animate-counter">{count}</span>;
-}
-
 function TestimonialCarousel() {
   const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -107,7 +65,7 @@ function TestimonialCarousel() {
           className="absolute inset-0 flex flex-col items-center text-center px-4"
         >
           <Quote className="w-10 h-10 text-primary mb-6" />
-          
+
           <p className="text-lg sm:text-xl text-white/90 mb-8 max-w-2xl leading-relaxed">
             "{testimonials[currentIndex].text}"
           </p>
@@ -137,9 +95,8 @@ function TestimonialCarousel() {
           <button
             key={index}
             onClick={() => setCurrentIndex(index)}
-            className={`w-2 h-2 rounded-full transition-all duration-300 ${
-              index === currentIndex ? "w-8 bg-primary" : "bg-white/30 hover:bg-white/50"
-            }`}
+            className={`w-2 h-2 rounded-full transition-all duration-300 ${index === currentIndex ? "w-8 bg-primary" : "bg-white/30 hover:bg-white/50"
+              }`}
             data-testid={`button-testimonial-dot-${index}`}
           />
         ))}
@@ -151,41 +108,6 @@ function TestimonialCarousel() {
 export default function FinalCTA() {
   const sectionRef = useRef(null);
   const isInView = useInView(sectionRef, { once: true, margin: "-100px" });
-  const [isSubmitted, setIsSubmitted] = useState(false);
-  const { toast } = useToast();
-
-  const form = useForm<FormData>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      name: "",
-      phone: "",
-    },
-  });
-
-  const submitMutation = useMutation({
-    mutationFn: async (data: FormData) => {
-      return apiRequest("POST", "/api/leads", data);
-    },
-    onSuccess: () => {
-      setIsSubmitted(true);
-      form.reset();
-      toast({
-        title: "Solicitud enviada",
-        description: "Nos pondremos en contacto contigo muy pronto.",
-      });
-    },
-    onError: () => {
-      toast({
-        title: "Error",
-        description: "No se pudo enviar la solicitud. Por favor, inténtalo de nuevo.",
-        variant: "destructive",
-      });
-    },
-  });
-
-  const onSubmit = (data: FormData) => {
-    submitMutation.mutate(data);
-  };
 
   return (
     <section
@@ -241,129 +163,78 @@ export default function FinalCTA() {
           initial={{ opacity: 0, y: 30 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6, delay: 0.4 }}
-          className="bg-card/50 backdrop-blur-sm border border-card-border rounded-md p-8 md:p-12 max-w-3xl mx-auto"
+          className="bg-card/50 backdrop-blur-sm border border-card-border rounded-md p-8 md:p-12 max-w-5xl mx-auto"
         >
-          <div className="flex items-center justify-center gap-2 mb-6">
-            <Clock className="w-5 h-5 text-primary" />
-            <span className="text-white font-display text-lg tracking-wide">
-              Quedan <span className="text-primary font-bold"><AnimatedCounter target={7} /></span> plazas hoy
-            </span>
-          </div>
-
-          <h3 className="font-display text-3xl sm:text-4xl text-white text-center mb-8 tracking-wide">
+          <h3 className="font-display text-3xl sm:text-4xl text-white text-center mb-12 tracking-wide">
             RESERVA TU <span className="text-primary">CITA</span>
           </h3>
 
-          {!isSubmitted ? (
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4" data-testid="form-lead-capture">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="name"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormControl>
-                          <div className="relative">
-                            <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-                            <Input
-                              placeholder="Tu nombre"
-                              className="pl-10 bg-background/50 border-white/10 text-white placeholder:text-white/40"
-                              data-testid="input-name"
-                              {...field}
-                            />
-                          </div>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="phone"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormControl>
-                          <div className="relative">
-                            <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-                            <Input
-                              placeholder="Tu teléfono"
-                              className="pl-10 bg-background/50 border-white/10 text-white placeholder:text-white/40"
-                              data-testid="input-phone"
-                              {...field}
-                            />
-                          </div>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
+            {/* Contact Info */}
+            <div className="space-y-8 flex flex-col justify-center">
+              <div className="flex items-start gap-4">
+                <div className="bg-primary/10 p-3 rounded-full">
+                  <MapPin className="w-6 h-6 text-primary" />
                 </div>
+                <div>
+                  <h4 className="font-display text-xl text-white mb-1 tracking-wide">Dirección</h4>
+                  <p className="text-muted-foreground">Calle de la Barbería 42, Madrid</p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-4">
+                <div className="bg-primary/10 p-3 rounded-full">
+                  <Clock className="w-6 h-6 text-primary" />
+                </div>
+                <div>
+                  <h4 className="font-display text-xl text-white mb-1 tracking-wide">Horario</h4>
+                  <p className="text-muted-foreground">Lunes - Sábado: 10:00 - 21:00</p>
+                  <p className="text-muted-foreground">Domingo: Cerrado</p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-4">
+                <div className="bg-primary/10 p-3 rounded-full">
+                  <Mail className="w-6 h-6 text-primary" />
+                </div>
+                <div>
+                  <h4 className="font-display text-xl text-white mb-1 tracking-wide">Correo</h4>
+                  <p className="text-muted-foreground">contacto@premiumbarber.com</p>
+                </div>
+              </div>
+
+              <div className="pt-4 flex flex-col sm:flex-row gap-4">
                 <Button
-                  type="submit"
                   size="lg"
-                  className="w-full font-display text-lg tracking-wider py-6 bg-primary hover:bg-primary/90"
-                  disabled={submitMutation.isPending}
-                  data-testid="button-submit-lead"
+                  className="bg-primary hover:bg-primary/90 text-white font-display tracking-wider w-full sm:w-auto"
                 >
-                  {submitMutation.isPending ? (
-                    "Enviando..."
-                  ) : (
-                    <>
-                      Quiero mi cita
-                      <ArrowRight className="w-5 h-5 ml-2" />
-                    </>
-                  )}
+                  RESERVA TU CITA
                 </Button>
-              </form>
-            </Form>
-          ) : (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="text-center py-8"
-            >
-              <CheckCircle className="w-16 h-16 text-primary mx-auto mb-4" />
-              <h4 className="font-display text-2xl text-white mb-2">¡Recibido!</h4>
-              <p className="text-white/60">Te contactaremos muy pronto para confirmar tu cita.</p>
-            </motion.div>
-          )}
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="border-green-500 text-green-500 hover:bg-green-500/10 font-display tracking-wider w-full sm:w-auto"
+                >
+                  <Phone className="w-4 h-4 mr-2" />
+                  WHATSAPP
+                </Button>
+              </div>
+            </div>
 
-          <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
-            <a href="" data-testid="link-agendar-final">
-              <Button
-                size="lg"
-                className="font-display tracking-wider animate-breath bg-primary hover:bg-primary/90 text-white"
-                data-testid="button-agendar-final"
-              >
-                AGENDA TU CORTE AHORA
-              </Button>
-            </a>
-            <a href="#servicios" data-testid="link-ver-precios">
-              <Button
-                variant="outline"
-                size="lg"
-                className="font-display tracking-wider border-white/20 text-white hover:bg-white/10"
-                data-testid="button-ver-precios"
-              >
-                VER PRECIOS
-              </Button>
-            </a>
+            {/* Map */}
+            <div className="h-[350px] w-full rounded-lg overflow-hidden border border-white/10 shadow-2xl">
+              <iframe
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3037.646369042231!2d-3.706037684604068!3d40.41670467936526!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xd42287c6c3e7431%3A0x62725d2a71560936!2sC.%20de%20la%20Barber%C3%ADa%2C%20Centro%2C%2028005%20Madrid!5e0!3m2!1sen!2ses!4v1645543210000!5m2!1sen!2ses"
+                width="100%"
+                height="100%"
+                style={{ border: 0 }}
+                allowFullScreen
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                className="grayscale hover:grayscale-0 transition-all duration-500"
+              ></iframe>
+            </div>
           </div>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={isInView ? { opacity: 1 } : {}}
-          transition={{ duration: 0.6, delay: 0.6 }}
-          className="mt-16 text-center"
-        >
-          <p className="text-white/40 text-sm">
-            Horario: Lun - Sáb 10:00 - 21:00 | Dom cerrado
-          </p>
-          <p className="text-white/40 text-sm mt-1">
-            Calle de la Barbería 42, Madrid
-          </p>
         </motion.div>
       </div>
     </section>

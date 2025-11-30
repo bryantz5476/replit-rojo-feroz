@@ -95,62 +95,43 @@ function Lightbox({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 backdrop-blur-sm p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 backdrop-blur-sm"
       onClick={onClose}
       data-testid="lightbox-overlay"
     >
+      {/* Close button - Absolute positioned relative to the viewport/overlay */}
       <Button
         size="icon"
         variant="ghost"
-        className="absolute top-4 right-4 text-white hover:bg-white/10 z-50"
+        className="absolute top-4 right-4 text-white hover:bg-white/10 z-[60]"
+        style={{ position: 'absolute', top: '1rem', right: '1rem' }}
         onClick={onClose}
         data-testid="button-close-lightbox"
       >
-        <X className="w-6 h-6" />
+        <X className="w-8 h-8" />
       </Button>
 
-      <Button
-        size="icon"
-        variant="ghost"
-        className="absolute left-4 top-1/2 -translate-y-1/2 text-white hover:bg-white/10"
-        onClick={(e) => {
-          e.stopPropagation();
-          onPrev();
-        }}
-        data-testid="button-prev-image"
-      >
-        <ChevronLeft className="w-8 h-8" />
-      </Button>
 
-      <Button
-        size="icon"
-        variant="ghost"
-        className="absolute right-4 top-1/2 -translate-y-1/2 text-white hover:bg-white/10"
-        onClick={(e) => {
-          e.stopPropagation();
-          onNext();
-        }}
-        data-testid="button-next-image"
-      >
-        <ChevronRight className="w-8 h-8" />
-      </Button>
 
+      {/* Image Container */}
       <motion.div
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.9, opacity: 0 }}
-        className="relative max-w-4xl max-h-[80vh] w-full"
+        className="relative w-full h-full flex flex-col items-center justify-center p-4 pointer-events-none"
         onClick={(e) => e.stopPropagation()}
       >
-        <img
-          src={item.image}
-          alt={item.title}
-          className="w-full h-full object-contain rounded-lg"
-        />
-        <div className="mt-4 text-center">
-          <h3 className="font-display text-2xl text-white tracking-wide">
-            {item.title}
-          </h3>
+        <div className="relative flex flex-col items-center justify-center w-full max-w-5xl pointer-events-auto">
+          <img
+            src={item.image}
+            alt={item.title}
+            className="max-w-full max-h-[75vh] object-contain rounded-lg shadow-2xl"
+          />
+          <div className="mt-6 text-center">
+            <h3 className="font-display text-2xl text-white tracking-wide uppercase">
+              {item.title}
+            </h3>
+          </div>
         </div>
       </motion.div>
     </motion.div>
