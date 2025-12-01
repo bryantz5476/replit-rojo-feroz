@@ -94,7 +94,7 @@ function ServiceCard({ service }: { service: typeof services[0] }) {
           loading="lazy"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
-        
+
         {service.limited && (
           <Badge
             variant="default"
@@ -103,7 +103,7 @@ function ServiceCard({ service }: { service: typeof services[0] }) {
             Solo fin de semana
           </Badge>
         )}
-        
+
         <div className="absolute bottom-3 left-3 right-3">
           <div className="flex items-center gap-2 text-white/80 text-sm">
             <Clock className="w-4 h-4" />
@@ -146,6 +146,7 @@ export default function ServicesCarousel() {
   const sectionRef = useRef(null);
   const isInView = useInView(sectionRef, { once: true, margin: "-100px" });
 
+  // Solo 2 copias para loop infinito simple
   const duplicatedServices = [...services, ...services];
 
   return (
@@ -171,18 +172,15 @@ export default function ServicesCarousel() {
         </motion.div>
       </div>
 
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={isInView ? { opacity: 1 } : {}}
-        transition={{ duration: 0.6, delay: 0.3 }}
-        className="pause-animation"
-      >
-        <div className="flex gap-6 animate-marquee">
-          {duplicatedServices.map((service, index) => (
-            <ServiceCard key={`${service.id}-${index}`} service={service} />
-          ))}
+      <div className="relative w-full">
+        <div className="pause-animation overflow-hidden">
+          <div className="flex gap-6 animate-infinite-scroll w-max">
+            {duplicatedServices.map((service, index) => (
+              <ServiceCard key={`service-${index}`} service={service} />
+            ))}
+          </div>
         </div>
-      </motion.div>
+      </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12">
         <motion.div

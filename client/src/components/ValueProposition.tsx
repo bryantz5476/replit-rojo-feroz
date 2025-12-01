@@ -25,7 +25,7 @@ const pillars = [
   {
     id: 3,
     icon: Crown,
-    title: "Ambiente Calle-Luxe",
+    title: "Ambiente DeLuxe",
     description: "La actitud de la calle con el refinamiento del lujo. Un espacio donde te sientes en casa pero sales como un rey.",
     reviews: 962,
     rating: 4.8,
@@ -65,11 +65,11 @@ function FlipCard({ pillar, index }: { pillar: typeof pillars[0]; index: number 
               <span className="text-muted-foreground">({pillar.reviews})</span>
             </div>
           </div>
-          
+
           <h3 className="font-display text-2xl sm:text-3xl text-white mb-3 tracking-wide">
             {pillar.title}
           </h3>
-          
+
           <p className="text-muted-foreground text-sm sm:text-base leading-relaxed flex-grow">
             {pillar.description}
           </p>
